@@ -1,8 +1,9 @@
 "use client";
 
-import { loginApi, LoginPayload, registerApi, RegisterPayload } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { loginApi, registerApi } from "@/lib/api/auth";
+import type { LoginPayload, RegisterPayload } from "@/types/auth";
 
 export function useAuth() {
     const router = useRouter()
