@@ -2,8 +2,8 @@ export interface TicketType {
     id: string,
     name: string,
     price: number,
-    quantity: number,
-    sold: number
+    totalQuantity: number
+    remainingQuantity: number
 }
 
 export interface Event {

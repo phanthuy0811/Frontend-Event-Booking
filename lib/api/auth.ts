@@ -10,3 +10,16 @@ export async function loginApi(payload: LoginPayload): Promise<AuthResponse> {
 export async function registerApi(payload: RegisterPayload): Promise<AuthResponse> {
     return apiClient.post("/auth/register", payload)
 }
+
+export async function logoutApi(refreshToken: string, accessToken: string): Promise<void> {
+    await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+        {},
+        {
+            headers: {
+                "Authorization": `Bearer ${refreshToken}`,
+                "x-access-token": accessToken,
+            }
+        }
+    )
+}

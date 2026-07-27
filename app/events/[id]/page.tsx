@@ -16,6 +16,7 @@ import {
     Info,
     Sparkles
 } from "lucide-react"
+import { BookEventButton } from "@/components/events/book-event-button"
 
 interface EventDetailPageProps {
     params: Promise<{ id: string }>
@@ -223,9 +224,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                 ) : (
                                     <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
                                         {event.ticketTypes.map(ticket => {
-                                            const remaining = ticket.quantity - ticket.sold
+                                            // Tính trực tiếp từ totalQuantity và remainingQuantity
+                                            const remaining = ticket.remainingQuantity
+                                            const sold = ticket.totalQuantity - ticket.remainingQuantity
                                             const isSoldOut = remaining <= 0
-                                            const percent = Math.round((ticket.sold / ticket.quantity) * 100)
+                                            const percent = ticket.totalQuantity > 0
+                                                ? Math.round((sold / ticket.totalQuantity) * 100)
+                                                : 0
                                             const isAlmostSoldOut = remaining <= 5 && !isSoldOut
 
                                             return (
@@ -251,9 +256,9 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                                     </div>
 
                                                     <p className="font-bold text-primary text-base">
-                                                        {ticket.price === 0
+                                                        {Number(ticket.price) === 0
                                                             ? "Miễn phí"
-                                                            : `${ticket.price.toLocaleString("vi-VN")}đ`
+                                                            : `${Number(ticket.price).toLocaleString("vi-VN")}đ`
                                                         }
                                                     </p>
 
@@ -268,7 +273,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                                         </div>
                                                         <div className="flex justify-between text-[11px] text-muted-foreground font-medium">
                                                             <span>Đã bán {percent}%</span>
-                                                            <span>Tổng {ticket.quantity}</span>
+                                                            <span>Tổng {ticket.totalQuantity}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -280,13 +285,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
                             {/* CTA Action Buttons */}
                             <div className="space-y-2.5 pt-2">
-                                <Link
-                                    href={`/events/${event.id}/book`}
-                                    className={`${buttonVariants({ variant: "default", size: "lg" })} w-full font-bold text-base shadow-md hover:shadow-lg transition-all`}
-                                >
-                                    Đặt vé ngay
-                                </Link>
-
+                                <BookEventButton eventId={event.id} />
                                 <Link
                                     href="/events"
                                     className={`${buttonVariants({ variant: "outline" })} w-full text-xs text-muted-foreground`}
