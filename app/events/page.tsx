@@ -42,7 +42,7 @@ export default function EventsPage() {
     }
 
     return (
-        <main className="flex-1 max-w-7xl mx-auto px-4 py-10">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-10">
             <h1 className="text-3xl font-bold mb-8">Tất cả sự kiện</h1>
 
             <form onSubmit={handleSearch} className="flex gap-3 mb-6">
