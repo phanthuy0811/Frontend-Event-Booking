@@ -119,10 +119,10 @@ export default function OrderDetailPage({ params }: OrderPageProps) {
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">Trạng thái</span>
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${order.status === "PAID"
-                                ? "bg-emerald-500/10 text-emerald-600"
-                                : order.status === "CANCELLED"
-                                    ? "bg-destructive/10 text-destructive"
-                                    : "bg-amber-500/10 text-amber-600"
+                            ? "bg-emerald-500/10 text-emerald-600"
+                            : order.status === "CANCELLED"
+                                ? "bg-destructive/10 text-destructive"
+                                : "bg-amber-500/10 text-amber-600"
                             }`}>
                             {order.status === "PAID" ? "Đã thanh toán"
                                 : order.status === "CANCELLED" ? "Đã hủy"

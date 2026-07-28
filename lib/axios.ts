@@ -17,9 +17,78 @@ apiClient.interceptors.request.use((config) => {
     return config
 })
 
+let isRefreshing = false
+
+let failedQueue: Array<{
+    resolve: (value: unknown) => void,
+    reject: (reason?: any) => void
+}> = []
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+    failedQueue.forEach(({ resolve, reject }) => {
+        if (error) {
+            reject(error)
+        } else {
+            resolve(token)
+        }
+    })
+    failedQueue = []
+}
+
 apiClient.interceptors.response.use(
     (response) => response.data.data,
-    (error) => {
+    async (error) => {
+        const originalRequest = error.config
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject })
+                }).then((token) => {
+                    originalRequest.headers.Authorization = `Bearer ${token}`
+                    return apiClient(originalRequest)
+                }).catch((err) => Promise.reject(err))
+            }
+
+            originalRequest._retry = true
+            isRefreshing = true
+            const refreshToken = typeof window !== 'undefined' ? localStorage.getItem("refreshToken") : null
+
+            if (!refreshToken) {
+                isRefreshing = false
+                localStorage.removeItem("accessToken")
+                localStorage.removeItem("refreshToken")
+                window.location.href = "/auth/login"
+                return Promise.reject(new Error('Phiên đăng nhập đã hết hạn'))
+            }
+
+            try {
+                const res = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+                    {},
+                    { headers: { Authorization: `Bearer ${refreshToken}` } }
+                )
+                const newAccessToken = res.data.data.accessToken
+                const newRefreshToken = res.data.data.refreshToken
+
+                localStorage.setItem("accessToken", newAccessToken)
+                localStorage.setItem("refreshToken", newRefreshToken)
+
+                apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`
+
+                processQueue(null, newAccessToken)
+
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+                return apiClient(originalRequest)
+            } catch (refreshToken) {
+                processQueue(refreshToken as Error, null)
+                localStorage.removeItem(`accessToken`)
+                localStorage.removeItem('refreshToken')
+                window.location.href = "/auth/login"
+                return Promise.reject(new Error("Phiên đăng nhập đã hết hạn"))
+            } finally {
+                isRefreshing = false
+            }
+        }
         const message = error.response?.data?.message || error.message
         return Promise.reject(new Error(message))
     }

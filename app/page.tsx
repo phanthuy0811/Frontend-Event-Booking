@@ -29,7 +29,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* === SỰ KIỆN NỔI BẬT === */}
       <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold">Sự kiện sắp diễn ra</h2>

@@ -1,10 +1,9 @@
-// components/layout/navbar.tsx
 "use client"
 
 import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { useAuth } from "@/hooks/userAuth"
-import { Ticket, LogOut } from "lucide-react"
+import { Ticket, LogOut, User } from "lucide-react"
 
 export function Navbar() {
     const { isLoggedIn, logout } = useAuth()
@@ -12,38 +11,42 @@ export function Navbar() {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 flex h-16 items-center justify-between">
-                {/* Logo */}
                 <Link href="/" className="text-xl font-bold tracking-tight flex items-center gap-2">
                     🎟️ EventBook
                 </Link>
 
-                {/* Navigation */}
                 <nav className="flex items-center gap-6 text-sm font-medium">
                     <Link href="/events" className="hover:text-primary transition-colors">
                         Sự kiện
                     </Link>
-                    {/* Đã đăng nhập thì hiện "Vé của tôi" */}
                     {isLoggedIn && (
-                        <Link href="/orders" className="hover:text-primary transition-colors flex items-center gap-1.5">
+                        <Link href="/orders/my" className="hover:text-primary transition-colors flex items-center gap-1.5">
                             <Ticket className="size-4" />
                             Vé của tôi
                         </Link>
                     )}
                 </nav>
 
-                {/* Auth buttons */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                     {isLoggedIn ? (
-                        // Đã đăng nhập: hiện nút Đăng xuất
-                        <button
-                            onClick={logout}
-                            className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1.5`}
-                        >
-                            <LogOut className="size-4" />
-                            Đăng xuất
-                        </button>
+                        <>
+                            <Link
+                                href="/profile"
+                                className={`${buttonVariants({ variant: "secondary" })} flex items-center gap-1.5 font-semibold text-xs h-9 px-3.5 rounded-full`}
+                            >
+                                <User className="size-4.5 text-primary" />
+
+                            </Link>
+
+                            <button
+                                onClick={logout}
+                                className={`${buttonVariants({ variant: "outline" })} flex items-center gap-1.5 text-xs h-9 px-3.5 rounded-full hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30`}
+                            >
+                                <LogOut className="size-3.5" />
+                                <span>Đăng xuất</span>
+                            </button>
+                        </>
                     ) : (
-                        // Chưa đăng nhập: hiện Đăng nhập + Đăng ký
                         <>
                             <Link href="/auth/login" className={buttonVariants({ variant: "ghost" })}>
                                 Đăng nhập

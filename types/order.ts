@@ -7,11 +7,18 @@ export interface Reservation {
     expiresAt: string
 }
 
+export interface TicketTypeBasic {
+    id: string
+    name: string
+    price: number
+}
+
 export interface OrderItem {
     id: string
     ticketTypeId: string
     quantity: number
     unitPrice: number
+    ticketType?: TicketTypeBasic
 }
 
 export interface Order {
@@ -22,6 +29,8 @@ export interface Order {
     status: 'PENDING' | 'PAID' | 'CANCELLED'
     createdAt: string
     items: OrderItem[]
+    payment?: Payment
+    reservation?: Reservation
 }
 
 export interface Payment {

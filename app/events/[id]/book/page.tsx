@@ -1,11 +1,9 @@
-// app/events/[id]/book/page.tsx
 "use client"
 
 import { useRouter } from "next/navigation"
 import { getEventById } from "@/lib/api/events"
 import { createReservation } from "@/lib/api/reservations"
 import { createOrder } from "@/lib/api/orders"
-import { initiatePayment } from "@/lib/api/payments"
 import { Button } from "@/components/ui/button"
 import type { TicketType } from "@/types/event"
 import Link from "next/link"
@@ -17,8 +15,6 @@ interface BookPageProps {
     params: Promise<{ id: string }>
 }
 
-// ⚠️ Vì cần fetch event nhưng component phải là "use client" (có state),
-// ta dùng React.use() để unwrap Promise params
 export default function BookPage({ params }: BookPageProps) {
     const { id } = use(params)
     const router = useRouter()
@@ -50,22 +46,16 @@ export default function BookPage({ params }: BookPageProps) {
         setStep("processing")
 
         try {
-            // B1: Giữ chỗ
             const reservation = await createReservation({
                 ticketTypeId: selectedTicket.id,
                 quantity,
             })
 
-            // B2: Tạo đơn hàng từ reservation
             const order = await createOrder({
                 reservationId: reservation.id,
             })
 
-            // B3: Khởi tạo thanh toán (mock)
-            await initiatePayment(order.id)
-
-            // B4: Chuyển sang trang đơn hàng để chờ xác nhận
-            router.push(`/orders/${order.id}`)
+            router.push(`/orders/${order.id}/payment`)
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Đã có lỗi xảy ra"
             setErrorMsg(message)
@@ -230,7 +220,6 @@ export default function BookPage({ params }: BookPageProps) {
                 </section>
             )}
 
-            {/* Tóm tắt đơn & Nút xác nhận */}
             {selectedTicket && (
                 <div className="border rounded-2xl p-6 bg-card shadow-sm space-y-4">
                     <h2 className="font-bold text-base">Tóm tắt đơn hàng</h2>
@@ -264,7 +253,7 @@ export default function BookPage({ params }: BookPageProps) {
                         disabled={isLoading}
                         className="w-full h-12 text-base font-bold"
                     >
-                        {isLoading ? "Đang xử lý..." : "Xác nhận & Thanh toán"}
+                        {isLoading ? "Đang xử lý..." : "Đặt vé ngay"}
                     </Button>
 
                     <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

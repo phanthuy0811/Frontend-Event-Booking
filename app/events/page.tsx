@@ -1,4 +1,3 @@
-// app/events/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import type { Event } from "@/types/event"
 
-// Danh sách category — bạn thêm/sửa tuỳ dữ liệu thực tế
 const CATEGORIES = ["Tất cả", "Âm nhạc", "Thể thao", "Hội thảo", "Workshop", "Triển lãm"]
 
 export default function EventsPage() {
@@ -34,21 +32,19 @@ export default function EventsPage() {
         }
     }
 
-    // Fetch lần đầu khi vào trang
     useEffect(() => {
         fetchEvents()
-    }, [])   // chỉ chạy 1 lần khi mount
+    }, [])
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
-        fetchEvents()   // fetch lại khi bấm nút tìm kiếm
+        fetchEvents()
     }
 
     return (
         <main className="flex-1 max-w-7xl mx-auto px-4 py-10">
             <h1 className="text-3xl font-bold mb-8">Tất cả sự kiện</h1>
 
-            {/* === THANH TÌM KIẾM === */}
             <form onSubmit={handleSearch} className="flex gap-3 mb-6">
                 <Input
                     placeholder="Tìm kiếm sự kiện..."
@@ -65,15 +61,12 @@ export default function EventsPage() {
                 <Button type="submit">Tìm kiếm</Button>
             </form>
 
-            {/* === BỘ LỌC CATEGORY === */}
             <div className="flex flex-wrap gap-2 mb-8">
                 {CATEGORIES.map(cat => (
                     <button
                         key={cat}
                         onClick={() => {
                             setSelectedCategory(cat)
-                            // Tự động fetch lại khi đổi category
-                            // (cần dùng giá trị mới ngay, không phải state cũ)
                         }}
                         className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors
                             ${selectedCategory === cat
@@ -86,7 +79,6 @@ export default function EventsPage() {
                 ))}
             </div>
 
-            {/* === DANH SÁCH SỰ KIỆN === */}
             {isLoading ? (
                 <div className="text-center py-20 text-muted-foreground">Đang tải...</div>
             ) : events.length === 0 ? (

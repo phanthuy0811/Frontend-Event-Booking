@@ -13,3 +13,7 @@ export async function getOrderById(id: string): Promise<Order> {
 export async function getMyOrders(): Promise<Order[]> {
     return apiClient.get("/orders/my")
 }
+
+export async function cancelOrder(id: string): Promise<{ message: string }> {
+    return apiClient.patch(`/orders/${id}/cancel`)
+}
