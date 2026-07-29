@@ -1,6 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
 import { buttonVariants } from "@/components/ui/button"
+import { getCookie } from "@/lib/cookies"
 import { Event } from "@/types/event"
 
 interface BookEventButtonProps {
@@ -11,8 +12,7 @@ export function BookEventButton({ eventId }: BookEventButtonProps) {
     const router = useRouter()
 
     const handleBookClick = () => {
-        const token = typeof window !== 'undefined'
-            ? localStorage.getItem("accessToken") : null
+        const token = getCookie("accessToken")
 
         if (!token) {
             router.push("/auth/login")

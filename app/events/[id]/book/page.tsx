@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { getEventById } from "@/lib/api/events"
 import { createReservation } from "@/lib/api/reservations"
 import { createOrder } from "@/lib/api/orders"
+import { getCookie } from "@/lib/cookies"
 import { Button } from "@/components/ui/button"
 import type { TicketType } from "@/types/event"
 import Link from "next/link"
@@ -26,7 +27,7 @@ export default function BookPage({ params }: BookPageProps) {
     const [errorMsg, setErrorMsg] = useState("")
 
     useEffect(() => {
-        if (typeof window !== "undefined" && !localStorage.getItem("accessToken")) {
+        if (!getCookie("accessToken")) {
             router.push("/auth/login")
             return
         }

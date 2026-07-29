@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 import { useAuth } from "@/hooks/userAuth"
 import { getProfileApi, updateProfileApi } from "@/lib/api/users"
+import { getCookie } from "@/lib/cookies"
 import type { UserProfile } from "@/types/users"
 
 export default function ProfilePage() {
@@ -23,7 +24,7 @@ export default function ProfilePage() {
     const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
     useEffect(() => {
-        const token = localStorage.getItem("accessToken")
+        const token = getCookie("accessToken")
         if (!token) {
             router.push("/auth/login")
             return

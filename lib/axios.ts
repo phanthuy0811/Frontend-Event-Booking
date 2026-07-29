@@ -1,4 +1,5 @@
 import axios from "axios"
+import { getCookie, setCookie, removeCookie } from "@/lib/cookies"
 
 const apiClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -8,9 +9,7 @@ const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-    const token = typeof window !== 'undefined'
-        ? localStorage.getItem("accessToken")
-        : null
+    const token = getCookie("accessToken")
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
@@ -51,12 +50,12 @@ apiClient.interceptors.response.use(
 
             originalRequest._retry = true
             isRefreshing = true
-            const refreshToken = typeof window !== 'undefined' ? localStorage.getItem("refreshToken") : null
+            const refreshToken = getCookie("refreshToken")
 
             if (!refreshToken) {
                 isRefreshing = false
-                localStorage.removeItem("accessToken")
-                localStorage.removeItem("refreshToken")
+                removeCookie("accessToken")
+                removeCookie("refreshToken")
                 window.location.href = "/auth/login"
                 return Promise.reject(new Error('Phiên đăng nhập đã hết hạn'))
             }
@@ -70,8 +69,8 @@ apiClient.interceptors.response.use(
                 const newAccessToken = res.data.data.accessToken
                 const newRefreshToken = res.data.data.refreshToken
 
-                localStorage.setItem("accessToken", newAccessToken)
-                localStorage.setItem("refreshToken", newRefreshToken)
+                setCookie("accessToken", newAccessToken, 86400)
+                setCookie("refreshToken", newRefreshToken, 604800)
 
                 apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`
 
@@ -79,10 +78,10 @@ apiClient.interceptors.response.use(
 
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
                 return apiClient(originalRequest)
-            } catch (refreshToken) {
-                processQueue(refreshToken as Error, null)
-                localStorage.removeItem(`accessToken`)
-                localStorage.removeItem('refreshToken')
+            } catch (err) {
+                processQueue(err as Error, null)
+                removeCookie("accessToken")
+                removeCookie("refreshToken")
                 window.location.href = "/auth/login"
                 return Promise.reject(new Error("Phiên đăng nhập đã hết hạn"))
             } finally {
