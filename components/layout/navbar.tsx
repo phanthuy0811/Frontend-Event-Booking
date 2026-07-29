@@ -1,17 +1,27 @@
 "use client"
 
+import { useEffect } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { useAuth } from "@/hooks/userAuth"
 import { Ticket, LogOut, User } from "lucide-react"
 
 export function Navbar() {
-    const { isLoggedIn, logout } = useAuth()
+    const { isLoggedIn, logout, role } = useAuth()
+    const router = useRouter()
+    const pathname = usePathname()
+
+    useEffect(() => {
+        if (isLoggedIn && role === "ORGANIZER" && pathname === "/") {
+            router.replace("/organizer")
+        }
+    }, [isLoggedIn, role, pathname, router])
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 flex h-16 items-center justify-between">
-                <Link href="/" className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <Link href={role === "ORGANIZER" ? "/organizer" : "/"} className="text-xl font-bold tracking-tight flex items-center gap-2">
                     🎟️ EventBook
                 </Link>
 
@@ -23,6 +33,11 @@ export function Navbar() {
                         <Link href="/orders/my" className="hover:text-primary transition-colors flex items-center gap-1.5">
                             <Ticket className="size-4" />
                             Vé của tôi
+                        </Link>
+                    )}
+                    {isLoggedIn && role === "ORGANIZER" && (
+                        <Link href="/organizer" className="text-primary font-semibold hover:opacity-80 transition-opacity">
+                            Dashboard
                         </Link>
                     )}
                 </nav>

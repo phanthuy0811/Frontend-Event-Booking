@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react"
 import { getMyOrders, cancelOrder } from "@/lib/api/orders"
+import { getCookie } from "@/lib/cookies"
 import { initiatePayment } from "@/lib/api/payments"
 import type { Order } from "@/types/order"
 import Link from "next/link"
@@ -29,7 +30,7 @@ export default function MyOrdersPage() {
     const [cancellingId, setCancellingId] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!localStorage.getItem("accessToken")) {
+        if (!getCookie("accessToken")) {
             router.push("/auth/login")
             return
         }
