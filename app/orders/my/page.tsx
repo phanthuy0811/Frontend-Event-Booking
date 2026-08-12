@@ -35,7 +35,7 @@ export default function MyOrdersPage() {
             return
         }
         getMyOrders()
-            .then(data => setOrders(data))
+            .then(data => setOrders(data.items ?? []))
             .catch(() => setOrders([]))
             .finally(() => setIsLoading(false))
     }, [router])

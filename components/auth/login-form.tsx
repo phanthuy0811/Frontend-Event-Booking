@@ -67,8 +67,14 @@ export function LoginForm({
                                 </div>
 
                                 <Button type="submit" disabled={isLoading} className="h-11 mt-2 w-full text-base font-semibold shadow-md transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
-                                    Login
+                                    {isLoading ? "Đang đăng nhập..." : "Login"}
                                 </Button>
+
+                                {error && (
+                                    <p className="text-sm text-red-500 text-center rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 px-3 py-2">
+                                        {error}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border/60">

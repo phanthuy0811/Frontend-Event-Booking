@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
+import { SocketProvider } from "@/components/providers/socket-provider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -25,8 +27,12 @@ export default function RootLayout({
       className={`${inter.className} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <Navbar />
-        {children}</body>
+        <SocketProvider>
+          <Navbar />
+          {children}
+        </SocketProvider>
+        <Toaster position="bottom-right" richColors />
+      </body>
     </html>
   );
 }
