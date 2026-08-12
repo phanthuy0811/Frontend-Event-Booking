@@ -6,6 +6,7 @@ import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { useAuth } from "@/hooks/userAuth"
 import { Ticket, LogOut, User } from "lucide-react"
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 
 export function Navbar() {
     const { isLoggedIn, logout, role } = useAuth()
@@ -45,6 +46,8 @@ export function Navbar() {
                 <div className="flex items-center gap-2.5">
                     {isLoggedIn ? (
                         <>
+                            <NotificationDropdown />
+
                             <Link
                                 href="/profile"
                                 className={`${buttonVariants({ variant: "secondary" })} flex items-center gap-1.5 font-semibold text-xs h-9 px-3.5 rounded-full`}

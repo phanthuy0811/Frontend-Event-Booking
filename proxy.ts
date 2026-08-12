@@ -7,7 +7,7 @@ const PROTECTED_ROUTES: { prefix: string, role?: string[] }[] = [
     { prefix: '/admin', role: ['ADMIN'] },
 ];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const matched = PROTECTED_ROUTES.find((route) => pathname.startsWith(route.prefix));
 
@@ -24,7 +24,7 @@ export async function middleware(req: NextRequest) {
         const { payload } = await jwtVerify(token, secret);
 
         if (matched.role && !matched.role.includes(payload.role as string)) {
-            // dang nhap roi nhung sai role 
+            // dang nhap roi nhung sai role
             return NextResponse.redirect(new URL('/', req.url));
         }
     } catch {

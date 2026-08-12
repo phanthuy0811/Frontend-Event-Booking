@@ -10,7 +10,7 @@ export async function createOrder(payload: {
 export async function getOrderById(id: string): Promise<Order> {
     return apiClient.get(`/orders/${id}`)
 }
-export async function getMyOrders(): Promise<Order[]> {
+export async function getMyOrders(): Promise<{ items: Order[]; nextCursor: string | null; hasNextPage: boolean }> {
     return apiClient.get("/orders/my")
 }
 
