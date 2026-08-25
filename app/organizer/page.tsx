@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Plus, CalendarDays, Users, Ticket, ChevronRight, Clock, CheckCircle2, XCircle, AlertCircle, FileEdit } from "lucide-react"
+import { Plus, CalendarDays, Users, Ticket, ChevronRight, Clock, CheckCircle2, XCircle, AlertCircle, FileEdit, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { getMyEventsApi, submitEventApi, cancelEventApi } from "@/lib/api/organizer"
 import { getCookie } from "@/lib/cookies"
 import type { Event } from "@/types/event"
@@ -16,11 +17,21 @@ const STATUS_CONFIG = {
     CANCELLED: { label: "Đã hủy", color: "text-destructive", bg: "bg-destructive/10", icon: XCircle },
 }
 
+const STATUS_TABS = [
+    { key: "ALL", label: "Tất cả" },
+    { key: "DRAFT", label: "Bản nháp" },
+    { key: "PENDING_APPROVAL", label: "Chờ duyệt" },
+    { key: "PUBLISHED", label: "Đã đăng" },
+    { key: "CANCELLED", label: "Đã hủy" },
+]
+
 export default function OrganizerDashboardPage() {
     const router = useRouter()
     const [events, setEvents] = useState<Event[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [actionLoading, setActionLoading] = useState<string | null>(null)
+    const [filterStatus, setFilterStatus] = useState("ALL")
+    const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         const token = getCookie("accessToken")
@@ -59,6 +70,13 @@ export default function OrganizerDashboardPage() {
         draft: events.filter(e => e.status === "DRAFT").length,
     }
 
+    // Lọc events theo trạng thái và tên
+    const filteredEvents = events.filter(e => {
+        const matchStatus = filterStatus === "ALL" || e.status === filterStatus
+        const matchSearch = searchQuery.trim() === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase())
+        return matchStatus && matchSearch
+    })
+
     return (
         <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-10 space-y-8">
 
@@ -96,23 +114,61 @@ export default function OrganizerDashboardPage() {
                 ))}
             </div>
 
+            {/* Filter & Search */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                    {STATUS_TABS.map(tab => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setFilterStatus(tab.key)}
+                            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${filterStatus === tab.key
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                }`}
+                        >
+                            {tab.label}
+                            {tab.key === "ALL"
+                                ? ` (${events.length})`
+                                : ` (${events.filter(e => e.status === tab.key).length})`
+                            }
+                        </button>
+                    ))}
+                </div>
+                <div className="relative max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Tìm kiếm theo tên sự kiện..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="pl-9 h-10 rounded-xl"
+                    />
+                </div>
+            </div>
+
             {/* Event list */}
             {isLoading ? (
                 <div className="py-16 text-center text-muted-foreground">Đang tải danh sách sự kiện...</div>
-            ) : events.length === 0 ? (
+            ) : filteredEvents.length === 0 ? (
                 <div className="py-16 text-center border-2 border-dashed rounded-2xl bg-muted/20 space-y-3">
                     <CalendarDays className="size-12 mx-auto text-muted-foreground/40" />
-                    <p className="text-muted-foreground text-sm">Bạn chưa có sự kiện nào.</p>
-                    <Link href="/organizer/events/create">
-                        <Button variant="outline" className="mt-2 rounded-xl font-semibold gap-2">
-                            <Plus className="size-4" />
-                            Tạo sự kiện đầu tiên
-                        </Button>
-                    </Link>
+                    <p className="text-muted-foreground text-sm">
+                        {events.length === 0
+                            ? "Bạn chưa có sự kiện nào."
+                            : "Không tìm thấy sự kiện phù hợp."
+                        }
+                    </p>
+                    {events.length === 0 && (
+                        <Link href="/organizer/events/create">
+                            <Button variant="outline" className="mt-2 rounded-xl font-semibold gap-2">
+                                <Plus className="size-4" />
+                                Tạo sự kiện đầu tiên
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {events.map(event => {
+                    {filteredEvents.map(event => {
                         const cfg = STATUS_CONFIG[event.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.DRAFT
                         const StatusIcon = cfg.icon
                         const isDraft = event.status === "DRAFT"

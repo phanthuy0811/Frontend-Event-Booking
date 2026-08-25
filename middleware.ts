@@ -7,7 +7,7 @@ const PROTECTED_ROUTES: { prefix: string, role?: string[] }[] = [
     { prefix: '/admin', role: ['ADMIN'] },
 ];
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
     const matched = PROTECTED_ROUTES.find((route) => pathname.startsWith(route.prefix));
 

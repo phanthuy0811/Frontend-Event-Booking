@@ -2,7 +2,8 @@ import apiClient from "../axios"
 import type { Event } from "@/types/event"
 
 export async function getMyEventsApi(): Promise<Event[]> {
-    return apiClient.get("/events/organizer")
+    const res = await apiClient.get("/events/organizer")
+    return (res as any).items ?? res
 }
 
 export async function createEventApi(payload: {
