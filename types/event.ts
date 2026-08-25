@@ -17,7 +17,7 @@ export interface Event {
     category?: string
     startTime: string
     endTime: string
-    status: 'DRAFT' | 'PENDING_APPROVAL' | 'PUBLISHED' | 'CANCELLED'
+    status: 'DRAFT' | 'PENDING_APPROVAL' | 'PUBLISHED' | 'REJECTED' | 'CLOSED' | 'CANCELLED'
     organizerId: string
     ticketTypes: TicketType[]
 }
