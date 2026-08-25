@@ -17,12 +17,15 @@ export function Navbar() {
         if (isLoggedIn && role === "ORGANIZER" && pathname === "/") {
             router.replace("/organizer")
         }
+        if (isLoggedIn && role === "ADMIN" && pathname === "/") {
+            router.replace("/admin")
+        }
     }, [isLoggedIn, role, pathname, router])
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 flex h-16 items-center justify-between">
-                <Link href={role === "ORGANIZER" ? "/organizer" : "/"} className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <Link href={role === "ADMIN" ? "/admin" : role === "ORGANIZER" ? "/organizer" : "/"} className="text-xl font-bold tracking-tight flex items-center gap-2">
                     🎟️ EventBook
                 </Link>
 
@@ -39,6 +42,11 @@ export function Navbar() {
                     {isLoggedIn && role === "ORGANIZER" && (
                         <Link href="/organizer" className="text-primary font-semibold hover:opacity-80 transition-opacity">
                             Dashboard
+                        </Link>
+                    )}
+                    {isLoggedIn && role === "ADMIN" && (
+                        <Link href="/admin" className="text-primary font-semibold hover:opacity-80 transition-opacity">
+                            Admin
                         </Link>
                     )}
                 </nav>

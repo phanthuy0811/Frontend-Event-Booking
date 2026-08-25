@@ -44,7 +44,9 @@ export function useAuth() {
                 const payloadBase64 = data.accessToken.split(".")[1]
                 if (payloadBase64) {
                     const decoded = JSON.parse(atob(payloadBase64))
-                    if (decoded.role === "ORGANIZER") {
+                    if (decoded.role === "ADMIN") {
+                        targetUrl = "/admin"
+                    } else if (decoded.role === "ORGANIZER") {
                         targetUrl = "/organizer"
                     }
                 }
@@ -77,7 +79,9 @@ export function useAuth() {
                 const payloadBase64 = data.accessToken.split(".")[1]
                 if (payloadBase64) {
                     const decoded = JSON.parse(atob(payloadBase64))
-                    if (decoded.role === "ORGANIZER") {
+                    if (decoded.role === "ADMIN") {
+                        targetUrl = "/admin"
+                    } else if (decoded.role === "ORGANIZER") {
                         targetUrl = "/organizer"
                     }
                 }
